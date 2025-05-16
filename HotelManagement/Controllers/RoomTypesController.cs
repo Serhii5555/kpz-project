@@ -66,7 +66,8 @@ namespace HotelManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            if (id == 0)
+            var roomType = await _roomTypes.GetRoomTypeByIdAsync(id);
+            if (roomType == null)
             {
                 return NotFound();
             }

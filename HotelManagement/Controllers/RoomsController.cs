@@ -50,14 +50,14 @@ namespace HotelManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var roomTypes = await _roomTypes.GetAllRoomTypesAsync();
-            ViewBag.RoomTypes = roomTypes;
-
             var room = await _rooms.GetRoomByIdAsync(id);
             if (room == null)
             {
                 return NotFound();
             }
+
+            var roomTypes = await _roomTypes.GetAllRoomTypesAsync();
+            ViewBag.RoomTypes = roomTypes;
 
             return View(room);
         }
@@ -82,7 +82,8 @@ namespace HotelManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            if (id == 0)
+            var room = await _rooms.GetRoomByIdAsync(id);
+            if (room == null)
             {
                 return NotFound();
             }

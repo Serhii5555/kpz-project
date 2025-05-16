@@ -54,7 +54,6 @@ namespace HotelManagement.Controllers
             return View();
         }
 
-
         [HttpPost]
         public async Task<IActionResult> HotelPaymentCreate(Payment model)
         {
@@ -83,7 +82,8 @@ namespace HotelManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            if (id == 0)
+            var payment = _payments.GetPaymentByIdAsync(id);
+            if (payment == null)
             {
                 return NotFound();
             }
@@ -95,7 +95,8 @@ namespace HotelManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> GetTotalPrice(int bookingId)
         {
-            if (bookingId == 0)
+            var booking = _bookings.GetBookingByIdAsync(bookingId);
+            if (booking == null)
             {
                 return BadRequest("Invalid booking ID.");
             }
@@ -183,7 +184,5 @@ namespace HotelManagement.Controllers
             }
             return Json(new { success = false, message = "Service not found." });
         }
-
-
     }
 }

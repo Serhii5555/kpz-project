@@ -100,7 +100,8 @@ namespace HotelManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            if (id == 0)
+            var booking = _bookings.GetBookingByIdAsync(id);
+            if (booking == null)
             {
                 return NotFound();
             }

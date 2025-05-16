@@ -34,6 +34,7 @@ namespace HotelManagement.Controllers
                 await _servicesRepository.CreateServiceAsync(service);
                 return RedirectToAction(nameof(Index));
             }
+
             return View(service);
         }
 
@@ -44,6 +45,7 @@ namespace HotelManagement.Controllers
             {
                 return NotFound();
             }
+
             return View(service);
         }
 
@@ -68,6 +70,7 @@ namespace HotelManagement.Controllers
                     return NotFound();
                 }
             }
+
             return View(service);
         }
 
