@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using HotelManagement.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using HotelManagement.Models.Enums;
+using HotelManagement.Services.Pricing;
+using HotelManagement.Services.Holiday;
 
 
 namespace HotelManagement.Controllers
@@ -16,14 +19,56 @@ namespace HotelManagement.Controllers
         private readonly IRoomTypeRepository _roomTypes;
         private readonly IServiceRepository _services;
         private readonly IPaymentServiceRepository _paymentServices;
+        private readonly IRoomRepository _rooms;
+        private readonly PricingStrategyFactory _pricingStrategyFactory;
+        private readonly List<DateTime> _holidays;
 
-        public PaymentsController(IPaymentRepository payments, IBookingRepository bookings, IRoomTypeRepository roomTypes, IServiceRepository serviceRepository, IPaymentServiceRepository paymentServices)
+        public PaymentsController(IPaymentRepository payments, IBookingRepository bookings, IRoomTypeRepository roomTypes, IServiceRepository serviceRepository, IPaymentServiceRepository paymentServices, IRoomRepository rooms, PricingStrategyFactory pricingStrategyFactory, IHolidaysProvider holidayProvider)
         {
             _payments = payments;
             _bookings = bookings;
             _roomTypes = roomTypes;
             _services = serviceRepository;
             _paymentServices = paymentServices;
+            _pricingStrategyFactory = pricingStrategyFactory;
+            _rooms = rooms;
+            _holidays = holidayProvider.GetHolidays();
+        }
+
+        private async Task<PricingStrategyType> DetermineStrategyTypeAsync(Booking booking)
+        { 
+            var datesInRange = Enumerable.Range(0, (booking.check_out_date - booking.check_in_date).Days)
+                .Select(offset => booking.check_in_date.AddDays(offset));
+
+            if (datesInRange.Any(d => _holidays.Contains(d.Date)))
+            {
+                return PricingStrategyType.Holiday;
+            }
+
+            // TODO: Додати перевірку на VIP(я ніколи це не додам, мені лінь)
+            return PricingStrategyType.Standard;
+        }
+
+        private async Task<decimal> CalculateBookingTotalAsync(int bookingId)
+        {
+            var booking = await _bookings.GetBookingByIdAsync(bookingId);
+            if (booking == null)
+                throw new Exception("Booking not found.");
+
+            var room = await _rooms.GetRoomByIdAsync(booking.room_id);
+            if (room == null)
+                throw new Exception("Room not found.");
+
+            var roomType = await _roomTypes.GetRoomTypeByIdAsync(room.room_type_id);
+            if (roomType == null)
+                throw new Exception("Room Type not found.");
+
+            var price_per_night = roomType.base_price;
+
+            var strategyType = await DetermineStrategyTypeAsync(booking);
+            var strategy = _pricingStrategyFactory.GetStrategy(strategyType);
+
+            return strategy.CalculatePrice(booking.check_in_date, booking.check_out_date, price_per_night);
         }
 
         public async Task<ActionResult> Index()
@@ -59,9 +104,15 @@ namespace HotelManagement.Controllers
         {
             ViewBag.Bookings = await _bookings.GetBookingsByPaymentStatusAsync("Pending");
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var totalPrice = await _payments.CalculateTotalPriceAsync(model.booking_id);
+                return View(model);
+            }
+
+            try
+            {
+                var totalPrice = await CalculateBookingTotalAsync(model.booking_id);
+
                 var payment = new Payment
                 {
                     booking_id = model.booking_id,
@@ -74,9 +125,13 @@ namespace HotelManagement.Controllers
 
                 return RedirectToAction("HotelPayments", "Payments");
             }
-
-            return View(model);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(model);
+            }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -95,15 +150,9 @@ namespace HotelManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> GetTotalPrice(int bookingId)
         {
-            var booking = _bookings.GetBookingByIdAsync(bookingId);
-            if (booking == null)
-            {
-                return BadRequest("Invalid booking ID.");
-            }
-
             try
             {
-                var totalPrice = await _payments.CalculateTotalPriceAsync(bookingId);
+                var totalPrice = await CalculateBookingTotalAsync(bookingId);
                 return Json(new { success = true, totalPrice });
             }
             catch (Exception ex)

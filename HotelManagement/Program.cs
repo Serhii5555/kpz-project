@@ -1,6 +1,8 @@
 using HotelManagement.Models;
 using HotelManagement.Repositories;
 using HotelManagement.Repositories.Interfaces;
+using HotelManagement.Services.Holiday;
+using HotelManagement.Services.Pricing;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
@@ -20,6 +22,15 @@ builder.Services.AddSingleton<IServiceRepository, ServiceRepository>();
 builder.Services.AddSingleton<IPaymentRepository, PaymentRepository>();
 builder.Services.AddSingleton<IPaymentServiceRepository, PaymentServiceRepository>();
 builder.Services.AddSingleton<IStatisticsRepository, StatisticsRepository>();
+
+// Booking strategy implementation
+builder.Services.AddSingleton<IHolidaysProvider, DefaultHolidaysProvider>();
+
+builder.Services.AddScoped<StandardPricingStrategy>();
+builder.Services.AddScoped<VipPricingStrategy>();
+builder.Services.AddScoped<HolidayPricingStrategy>();
+
+builder.Services.AddScoped<PricingStrategyFactory>();
 
 builder.Services.AddRazorPages()
     .AddMvcOptions(options =>
