@@ -132,4 +132,85 @@ https://localhost:7150
 
 ## 🛠️ Technical Overview
 
-Coming soon...
+### 📌 Programming Principles
+
+This project follows several key programming principles to ensure clean, maintainable, and scalable code:
+
+1. **Single Responsibility Principle (SRP)** – Each class and method has one clearly defined responsibility.
+2. **Separation of Concerns (SoC)** – Business logic, data access, and UI layers are decoupled.
+3. **Don’t Repeat Yourself (DRY)** – Reusable methods and centralized logic reduce duplication.
+4. **Open/Closed Principle (OCP)** – Code is open for extension but closed for modification.
+5. **Dependency Inversion Principle (DIP)** – High-level modules are not dependent on low-level modules; both depend on abstractions.
+6. **KISS (Keep It Simple, Stupid)** – Solutions are implemented in the simplest way possible without unnecessary complexity.
+
+---
+
+### 🧠 Design Patterns
+
+The following design patterns have been applied in the project:
+
+1. **Repository Pattern**  
+   Used to abstract and encapsulate data access logic.  
+   _Location:_ [`HotelManagement/Repositories/BookingRepository.cs`](./HotelManagement/Repositories/BookingRepository.cs)
+
+2. **Dependency Injection**  
+   Injected services and repositories via constructor injection for better testability and flexibility.  
+   _Configured in:_ [`HotelManagement/Program.cs`](./HotelManagement/Program.cs)
+
+3. **Model-View-Controller (MVC)**  
+   Standard ASP.NET MVC architecture separates data (Models), UI (Views), and logic (Controllers).  
+   _Example:_ [`HotelManagement/Controllers/BookingController.cs`](./HotelManagement/Controllers/BookingController.cs)
+
+4. **Strategy Pattern**  
+   Used for dynamic room pricing based on booking type (Standard, VIP, Holiday).  
+   _Location:_ [`HotelManagement/Services/Pricing/`](./HotelManagement/Services/Pricing/)
+
+---
+
+### 🔄 Refactoring Techniques
+
+The following refactoring techniques were applied to improve code quality:
+
+1. **Introduce Interface** – Common operations abstracted into interfaces for flexibility.
+2. **Replace Magic Strings/Numbers with Constants** – Defined enums/constants for validation patterns.
+3. **Rename for Clarity** – Renamed variables and methods for better readability.
+4. **Extract Method** – Long methods broken into smaller, reusable methods.
+5. **Encapsulate Field** – Replaced direct field access with properties and validation logic.
+
+---
+
+### 🧱 Project Structure
+
+The solution follows a layered architecture:
+
+```
+
+HotelManagement/
+│
+├── Controllers/          # MVC Controllers (UI logic)
+├── Models/               # Data models and DTOs
+├── Views/                # Razor Views (UI templates)
+├── Data/                 # Database communication (Dapper)
+├── Repositories/         # Dapper data access logic
+├── Services/             # Services that support functionality
+├── Validations/          # Custom validation attributes for data annotation
+├── wwwroot/              # Static files (CSS, JS)
+├── tailwind.config.js    # Tailwind CSS configuration
+├── appsettings.json      # Application config (DB connection, etc.)
+└── Program.cs            # App entry point and service configuration
+
+```
+
+---
+
+### 💻 Technologies Used
+
+- **ASP.NET MVC (.NET 8)** – Web framework
+- **Dapper** – Lightweight ORM for SQL Server
+- **SQL Server** – Relational database
+- **Tailwind CSS** – Utility-first CSS framework
+- **npm** – For managing frontend packages
+- **Visual Studio** – Development environment
+
+---
+
