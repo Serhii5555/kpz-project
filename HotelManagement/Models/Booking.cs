@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using HotelManagement.Models.Enums;
 using HotelManagement.Validations;
 
 namespace HotelManagement.Models
@@ -26,14 +27,14 @@ namespace HotelManagement.Models
 
         [Required(ErrorMessage = "Status is required.")]
         [StringLength(20, ErrorMessage = "Status cannot exceed 20 characters.")]
-        [RegularExpression("Booked|Pending|Completed", ErrorMessage = "Invalid status.")]
+        [EnumValidation(typeof(BookingStatus), ErrorMessage = "Invalid status.")]
         public string? status { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "Total price must be a positive value.")]
         public decimal? total_price { get; set; }
 
         [Required]
-        [RegularExpression("Pending|Completed", ErrorMessage = "Invalid payment status.")]
+        [EnumValidation(typeof(PaymentStatus), ErrorMessage = "Invalid payment status.")]
         public string payment_status { get; set; }
 
         public string? display_room_name { get; set; }
