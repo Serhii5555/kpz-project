@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HotelManagement.Models.Enums;
+using HotelManagement.Validations;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace HotelManagement.Models
@@ -21,7 +23,7 @@ namespace HotelManagement.Models
 
         [Required]
         [StringLength(20)]
-        [RegularExpression("Hotel|Service", ErrorMessage = "Invalid payment type.")]
+        [EnumValidation(typeof(PaymentType), ErrorMessage = "Invalid payment type.")]
         public string payment_type { get; set; }
 
         public string? display_service_name { get; set; }
