@@ -125,7 +125,7 @@ namespace HotelManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAvailableRooms()
         {
-            ViewBag.RoomTypes = new SelectList(await _roomsTypes.GetAllRoomTypesAsync(), "name", "name");
+            ViewBag.RoomTypes = new SelectList(await _roomsTypes.GetAllRoomTypesAsync(), nameof(RoomType.name), nameof(RoomType.name));
 
             return View(new RoomAvailabilityViewModel());
         }
@@ -133,7 +133,7 @@ namespace HotelManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAvailableRooms(RoomAvailabilityViewModel model)
         {
-            ViewBag.RoomTypes = new SelectList(await _roomsTypes.GetAllRoomTypesAsync(), "name", "name");
+            ViewBag.RoomTypes = new SelectList(await _roomsTypes.GetAllRoomTypesAsync(), nameof(RoomType.name), nameof(RoomType.name));
 
             if (!ModelState.IsValid)
             {
