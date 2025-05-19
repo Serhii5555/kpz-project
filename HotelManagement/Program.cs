@@ -3,6 +3,8 @@ using HotelManagement.Repositories;
 using HotelManagement.Repositories.Interfaces;
 using HotelManagement.Services.Holiday;
 using HotelManagement.Services.Pricing;
+using HotelManagement.Services;             // Додано
+using HotelManagement.Services.Interfaces;  // Додано
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
@@ -23,6 +25,9 @@ builder.Services.AddSingleton<IPaymentRepository, PaymentRepository>();
 builder.Services.AddSingleton<IPaymentServiceRepository, PaymentServiceRepository>();
 builder.Services.AddSingleton<IStatisticsRepository, StatisticsRepository>();
 
+// Додати реєстрацію BookingService та IBookingService
+builder.Services.AddScoped<IBookingService, BookingService>();
+
 // Booking strategy implementation
 builder.Services.AddSingleton<IHolidaysProvider, DefaultHolidaysProvider>();
 
@@ -42,13 +47,11 @@ builder.Services.AddRazorPages()
 
 var app = builder.Build();
 
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -60,4 +63,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.Run();

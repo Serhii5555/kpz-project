@@ -1,44 +1,32 @@
 ﻿using HotelManagement.Models;
 using HotelManagement.Models.ViewModels;
-using HotelManagement.Repositories;
-using HotelManagement.Repositories.Interfaces;
+using HotelManagement.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HotelManagement.Controllers
 {
     public class BookingsController : Controller
     {
-        private readonly IBookingRepository _bookings;
-        private readonly IGuestRepository _guests;
-        private readonly IRoomRepository _rooms;
-        private readonly IRoomTypeRepository _roomsTypes;
+        private readonly IBookingService _bookingService;
 
-        public BookingsController(IBookingRepository bookings, IGuestRepository guest, IRoomRepository room, IRoomTypeRepository roomsTypes)
+        public BookingsController(IBookingService bookingService)
         {
-            _bookings = bookings;
-            _guests = guest;
-            _rooms = room;
-            _roomsTypes = roomsTypes;
+            _bookingService = bookingService;
         }
-
-        private async Task PopulateViewBagAsync()
-        {
-            ViewBag.Guests = new SelectList(await _guests.GetAllGuestsAsync(), nameof(Guest.guest_id), nameof(Guest.guest_display));
-            ViewBag.Rooms = new SelectList(await _rooms.GetAllRoomsAsync(), nameof(Room.room_id), nameof(Room.room_number));
-        }
-
 
         public async Task<IActionResult> Index()
         {
-            var bookings = await _bookings.GetAllBookingsAsync();
+            var bookings = await _bookingService.GetAllBookingsAsync();
             return View(bookings);
         }
 
         [HttpGet]
         public async Task<IActionResult> Create(int roomId, DateTime checkInDate, DateTime checkOutDate)
         {
-
             var model = new Booking
             {
                 room_id = roomId,
@@ -46,7 +34,9 @@ namespace HotelManagement.Controllers
                 check_out_date = checkOutDate,
             };
 
-            await PopulateViewBagAsync();
+            var (guests, rooms) = await _bookingService.GetGuestsAndRoomsSelectListsAsync();
+            ViewBag.Guests = guests;
+            ViewBag.Rooms = rooms;
 
             return View(model);
         }
@@ -57,26 +47,28 @@ namespace HotelManagement.Controllers
         {
             if (!ModelState.IsValid)
             {
-                await PopulateViewBagAsync();
-
+                var (guests, rooms) = await _bookingService.GetGuestsAndRoomsSelectListsAsync();
+                ViewBag.Guests = guests;
+                ViewBag.Rooms = rooms;
                 return View(booking);
             }
 
-
-            await _bookings.CreateBookingAsync(booking);
+            await _bookingService.CreateBookingAsync(booking);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            await PopulateViewBagAsync();
-
-            var booking = await _bookings.GetBookingByIdAsync(id);
+            var booking = await _bookingService.GetBookingByIdAsync(id);
             if (booking == null)
             {
                 return NotFound();
             }
+
+            var (guests, rooms) = await _bookingService.GetGuestsAndRoomsSelectListsAsync();
+            ViewBag.Guests = guests;
+            ViewBag.Rooms = rooms;
 
             return View(booking);
         }
@@ -87,11 +79,13 @@ namespace HotelManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _bookings.UpdateBookingAsync(booking);
-                return RedirectToAction("Index");
+                await _bookingService.UpdateBookingAsync(booking);
+                return RedirectToAction(nameof(Index));
             }
 
-            await PopulateViewBagAsync();
+            var (guests, rooms) = await _bookingService.GetGuestsAndRoomsSelectListsAsync();
+            ViewBag.Guests = guests;
+            ViewBag.Rooms = rooms;
 
             return View(booking);
         }
@@ -100,20 +94,20 @@ namespace HotelManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var booking = _bookings.GetBookingByIdAsync(id);
+            var booking = await _bookingService.GetBookingByIdAsync(id);
             if (booking == null)
             {
                 return NotFound();
             }
 
-            await _bookings.DeleteBookingAsync(id);
-            return RedirectToAction("Index");
+            await _bookingService.DeleteBookingAsync(id);
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public async Task<IActionResult> GetBookedDates(int roomId)
         {
-            var bookedDates = await _bookings.GetBookedDatesAsync(roomId);
+            var bookedDates = await _bookingService.GetBookedDatesAsync(roomId);
 
             if (bookedDates != null && bookedDates.Any())
             {
@@ -125,7 +119,8 @@ namespace HotelManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAvailableRooms()
         {
-            ViewBag.RoomTypes = new SelectList(await _roomsTypes.GetAllRoomTypesAsync(), nameof(RoomType.name), nameof(RoomType.name));
+            var roomTypes = await _bookingService.GetAllRoomTypesAsync();
+            ViewBag.RoomTypes = new SelectList(roomTypes, nameof(RoomType.name), nameof(RoomType.name));
 
             return View(new RoomAvailabilityViewModel());
         }
@@ -133,14 +128,15 @@ namespace HotelManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAvailableRooms(RoomAvailabilityViewModel model)
         {
-            ViewBag.RoomTypes = new SelectList(await _roomsTypes.GetAllRoomTypesAsync(), nameof(RoomType.name), nameof(RoomType.name));
+            var roomTypes = await _bookingService.GetAllRoomTypesAsync();
+            ViewBag.RoomTypes = new SelectList(roomTypes, nameof(RoomType.name), nameof(RoomType.name));
 
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            model.AvailableRooms = await _rooms.FindAvailableRoomsAsync(
+            model.AvailableRooms = await _bookingService.FindAvailableRoomsAsync(
                 model.RoomType,
                 model.check_in_date,
                 model.check_out_date,
@@ -151,5 +147,3 @@ namespace HotelManagement.Controllers
         }
     }
 }
-
-
