@@ -214,3 +214,7 @@ HotelManagement/
 
 ---
 
+### 🤓 Number of Code Lines
+
+![number_of_code_lines](number_of_lines.png)
+
