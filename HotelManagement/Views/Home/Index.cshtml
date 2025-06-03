@@ -5,139 +5,128 @@
 <div class="container mx-auto py-4 px-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
-        <!-- Service Income -->
-        <div>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Top 3 Services by Income</h2>
-                <table class="w-full table-auto text-left">
-                    <thead>
+        <!-- Top 3 Services by Income -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Top 3 Services by Income</h2>
+            <table class="w-full table-auto text-left">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border-b font-medium text-gray-600">Service</th>
+                        <th class="px-4 py-2 border-b font-medium text-gray-600">Income</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var service in Model.ServiceIncome)
+                    {
                         <tr>
-                            <th class="px-4 py-2 border-b font-medium text-gray-600">Service</th>
-                            <th class="px-4 py-2 border-b font-medium text-gray-600">Income</th>
+                            <td class="px-4 py-2 border-b text-gray-700">@service.ServiceName</td>
+                            <td class="px-4 py-2 border-b text-gray-700">@service.TotalServiceIncome.ToString("F2")</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var service in Model.ServiceIncome)
-                        {
-                            <tr>
-                                <td class="px-4 py-2 border-b text-gray-700">@service.service_name</td>
-                                <td class="px-4 py-2 border-b text-gray-700">@service.total_service_income</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
 
-        <!-- Age Range Statistics -->
-        <div>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Guest Count by Age Range</h2>
-                <table class="w-full table-auto text-left">
-                    <thead>
+        <!-- Guest Count by Age Range -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Guest Count by Age Range</h2>
+            <table class="w-full table-auto text-left">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border-b font-medium text-gray-600">Age Range</th>
+                        <th class="px-4 py-2 border-b font-medium text-gray-600">Guests</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ageRange in Model.AgeRangeStatistics)
+                    {
                         <tr>
-                            <th class="px-4 py-2 border-b font-medium text-gray-600">Age Range</th>
-                            <th class="px-4 py-2 border-b font-medium text-gray-600">Guest Count</th>
+                            <td class="px-4 py-2 border-b text-gray-700">@ageRange.AgeRange</td>
+                            <td class="px-4 py-2 border-b text-gray-700">@ageRange.GuestCount</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var ageRange in Model.AgeRangeStatistics)
-                        {
-                            <tr>
-                                <td class="px-4 py-2 border-b text-gray-700">@ageRange.age_range</td>
-                                <td class="px-4 py-2 border-b text-gray-700">@ageRange.guest_count</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
 
         <!-- Guest Percentage by Country -->
-        <div>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Guest Percentage by Country</h2>
-                <table class="w-full table-auto text-left">
-                    <thead>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Guest Percentage by Country</h2>
+            <table class="w-full table-auto text-left">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border-b font-medium text-gray-600">Country</th>
+                        <th class="px-4 py-2 border-b font-medium text-gray-600">Guests</th>
+                        <th class="px-4 py-2 border-b font-medium text-gray-600">%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var country in Model.CountryGuestPercentage)
+                    {
                         <tr>
-                            <th class="px-4 py-2 border-b font-medium text-gray-600">Country</th>
-                            <th class="px-4 py-2 border-b font-medium text-gray-600">Guest Count</th>
-                            <th class="px-4 py-2 border-b font-medium text-gray-600">Percentage</th>
+                            <td class="px-4 py-2 border-b text-gray-700">@country.Nationality</td>
+                            <td class="px-4 py-2 border-b text-gray-700">@country.GuestCount</td>
+                            <td class="px-4 py-2 border-b text-gray-700">@country.Percentage.ToString("F2")%</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var country in Model.CountryGuestPercentage)
-                        {
-                            <tr>
-                                <td class="px-4 py-2 border-b text-gray-700">@country.nationality</td>
-                                <td class="px-4 py-2 border-b text-gray-700">@country.guest_count</td>
-                                <td class="px-4 py-2 border-b text-gray-700">@string.Format("{0:F2}%", country.percentage)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
 
         <!-- Top 3 Room Types by Booking Percentage -->
-        <div>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Top 3 Room Types by Booking Percentage</h2>
-                <table class="w-full table-auto text-left">
-                    <thead>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Top 3 Room Types by Booking %</h2>
+            <table class="w-full table-auto text-left">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border-b font-medium text-gray-600">Room Type</th>
+                        <th class="px-4 py-2 border-b font-medium text-gray-600">%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var room in Model.TopRoomTypes)
+                    {
                         <tr>
-                            <th class="px-4 py-2 border-b font-medium text-gray-600">Room Type</th>
-                            <th class="px-4 py-2 border-b font-medium text-gray-600">Booking Percentage</th>
+                            <td class="px-4 py-2 border-b text-gray-700">@room.RoomType</td>
+                            <td class="px-4 py-2 border-b text-gray-700">@room.BookingPercentage.ToString("F2")%</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var room in Model.TopRoomTypes)
-                        {
-                            <tr>
-                                <td class="px-4 py-2 border-b text-gray-700">@room.room_type</td>
-                                <td class="px-4 py-2 border-b text-gray-700">@string.Format("{0:F2}%", room.booking_percentage)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
 
         <!-- Revenue for a Period -->
-        <div id="totalrevenue">
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Revenue for a Specific Period</h2>
-                <form method="post" asp-action="GetRevenueForPeriod">
-                    <div class="mb-4">
-                        <label for="startDate" class="block text-gray-700 font-medium mb-2">Start Date</label>
-                        <input type="date" id="startDate" name="startDate" required
-                               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div class="mb-4">
-                        <label for="endDate" class="block text-gray-700 font-medium mb-2">End Date</label>
-                        <input type="date" id="endDate" name="endDate" required
-                               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <button type="submit"
-                            class="bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-600">
-                        Get Revenue
-                    </button>
-                </form>
-                @if (Model.RevenueForPeriod != null)
-                {
-                    <p class="mt-4 text-xl font-bold text-gray-800">
-                        Revenue: @Model.RevenueForPeriod.TotalRevenue
-                    </p>
-                }
-            </div>
+        <div id="totalrevenue" class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Revenue for a Specific Period</h2>
+            <form method="post" asp-action="GetRevenueForPeriod">
+                <div class="mb-4">
+                    <label for="startDate" class="block text-gray-700 font-medium mb-2">Start Date</label>
+                    <input type="date" id="startDate" name="startDate" required
+                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="mb-4">
+                    <label for="endDate" class="block text-gray-700 font-medium mb-2">End Date</label>
+                    <input type="date" id="endDate" name="endDate" required
+                           class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <button type="submit"
+                        class="bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-600">
+                    Get Revenue
+                </button>
+            </form>
+            @if (Model.RevenueForPeriod != null)
+            {
+                <p class="mt-4 text-xl font-bold text-gray-800">
+                    Revenue: @Model.RevenueForPeriod.TotalRevenue.ToString("F2")
+                </p>
+            }
         </div>
 
         <!-- Total Booking Revenue -->
-        <div>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Total Booking Revenue</h2>
-                <p class="text-xl font-bold text-gray-800">@Model.TotalBookingRevenue</p>
-            </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Total Booking Revenue</h2>
+            <p class="text-xl font-bold text-gray-800">@Model.TotalBookingRevenue.ToString("F2")</p>
         </div>
+
     </div>
 </div>
